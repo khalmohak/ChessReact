@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import ChessSquare from "./ChessSquare";
+import {useGameState} from "../providers/GameStateProvider";
+import {PieceType} from "../types/enums";
 
-interface ChessBoardProps {
-    board: string[][];
-    setBoard: (board: string[][]) => void;
-    currentPlayer: string;
-}
+const ChessBoard: React.FC = () => {
+    const {board, setBoard, currentPlayer, setCurrentPlayer} = useGameState();
 
-const ChessBoard: React.FC<ChessBoardProps> = ({board, currentPlayer, setBoard}) => {
     const [selectedPiece, setSelectedPiece] = useState<number[] | null>(null);
     const [possibleMoves, setPossibleMoves] = useState<number[][]>([]);
 
@@ -15,13 +13,14 @@ const ChessBoard: React.FC<ChessBoardProps> = ({board, currentPlayer, setBoard})
         if (!selectedPiece) {
             return;
         }
+
         const [i, j] = selectedPiece;
         const piece = board[i][j];
-        const possibleMoves = calulatePossibleMoves(piece, i, j);
+        const possibleMoves = calculatePossibleMoves(piece, i, j);
         setPossibleMoves(possibleMoves);
     }, [selectedPiece]);
 
-    const calulatePossibleMoves = (piece: string, i: number, j: number) => {
+    const calculatePossibleMoves = (piece: string, i: number, j: number) => {
         const possibleMoves: number[][] = [];
         switch (piece) {
             case "wP":
@@ -75,7 +74,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({board, currentPlayer, setBoard})
         const piece = board[selectedI][selectedJ];
         const newBoard = board.map(row => [...row]);
         newBoard[i][j] = piece;
-        newBoard[selectedI][selectedJ] = "";
+        newBoard[selectedI][selectedJ] = PieceType.EMPTY;
         setBoard(newBoard);
     }
 

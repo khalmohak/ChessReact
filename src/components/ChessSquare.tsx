@@ -1,8 +1,9 @@
 import React from 'react';
-import {PIECES} from "../Pieces";
+import {PieceType} from "../types/enums";
+import {Pieces} from "../lib/Pieces";
 
 interface ChessSquareProps {
-    piece: string;
+    piece: PieceType;
     i: number;
     j: number;
     selectedPiece: number[] | null;
@@ -30,7 +31,6 @@ const ChessSquare: React.FC<ChessSquareProps> = ({
         <div 
         key={`${i}-${j}`}
         onClick={() => {
-            console.log("clicked", i, j);
                     if (isPossibleMove) {
                         movePiece(i, j);
                         return;
@@ -46,14 +46,13 @@ const ChessSquare: React.FC<ChessSquareProps> = ({
                 className={`flex items-center justify-center w-full h-full ${canBeKilled ? "bg-red-500 opacity-50" : isPossibleMove? "bg-green-500 opacity-50" :""}`}
             >
             {
-                PIECES[piece] ? <img
-                    src={PIECES[piece]['src']}
+                piece!=PieceType.EMPTY && <img
+                    src={""}
                     alt={piece}
                     className={"h-10 w-10"}
-                    
-                   
-                /> : ""
+                />
             }
+
             </div>
         </div>
     );
