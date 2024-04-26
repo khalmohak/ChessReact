@@ -79,12 +79,20 @@ export const GameStateProvider: React.FC<{
         }
 
         const targetPiece = board[toRow][toCol];
+
         if (piece === PieceType.EMPTY) {
             return;
         }
+
         if (piece === targetPiece) {
             return;
         }
+
+        //Check if the move is valid
+        if (!possibleMoves.some((move) => move.row === toRow && move.col === toCol)) {
+            return;
+        }
+
         const move: Move = {
             targetPiece,
             currentPiece: piece,
@@ -131,7 +139,6 @@ export const GameStateProvider: React.FC<{
                 setWhiteCapturedPieces([...whiteCapturedPieces]);
             }
         }
-
 
         togglePlayer();
     }
@@ -205,23 +212,295 @@ export const GameStateProvider: React.FC<{
     }
 
     const getRookMoves = (position: Position) => {
-        return [];
+        const {row, col} = position;
+        const piece = board[row][col];
+        const pieceColor = getPieceColor(piece);
+        const moves: Position[] = [];
+
+        //A rook can move in four directions
+        //1. Up
+        //2. Down
+        //3. Left
+        //4. Right
+        //A rook can move until it reaches the end of the board or captures a piece
+
+        //Up
+        for (let i = row - 1; i >= 0; i--) {
+            if (board[i][col] === PieceType.EMPTY) {
+                moves.push({row: i, col});
+            } else {
+                if (getPieceColor(board[i][col]) !== pieceColor) {
+                    moves.push({row: i, col});
+                }
+                break;
+            }
+        }
+
+        //Down
+        for (let i = row + 1; i < 8; i++) {
+            if (board[i][col] === PieceType.EMPTY) {
+                moves.push({row: i, col});
+            } else {
+                if (getPieceColor(board[i][col]) !== pieceColor) {
+                    moves.push({row: i, col});
+                }
+                break;
+            }
+        }
+
+        //Left
+        for (let i = col - 1; i >= 0; i--) {
+            if (board[row][i] === PieceType.EMPTY) {
+                moves.push({row, col: i});
+            } else {
+                if (getPieceColor(board[row][i]) !== pieceColor) {
+                    moves.push({row, col: i});
+                }
+                break;
+            }
+        }
+
+        //Right
+        for (let i = col + 1; i < 8; i++) {
+            if (board[row][i] === PieceType.EMPTY) {
+                moves.push({row, col: i});
+            } else {
+                if (getPieceColor(board[row][i]) !== pieceColor) {
+                    moves.push({row, col: i});
+                }
+                break;
+            }
+        }
+
+
+        return moves;
     }
 
     const getKnightMoves = (position: Position) => {
-        return [];
+        const {row, col} = position;
+        const piece = board[row][col];
+        const pieceColor = getPieceColor(piece);
+        const moves: Position[] = [];
+
+        //A knight can move in an L shape
+        //1. Up and left
+        //2. Up and right
+        //3. Down and left
+        //4. Down and right
+
+        //Up and left
+        if (row - 2 >= 0 && col - 1 >= 0) {
+            if (board[row - 2][col - 1] === PieceType.EMPTY || getPieceColor(board[row - 2][col - 1]) !== pieceColor) {
+                moves.push({row: row - 2, col: col - 1});
+            }
+        }
+
+        //Up and right
+        if (row - 2 >= 0 && col + 1 < 8) {
+            if (board[row - 2][col + 1] === PieceType.EMPTY || getPieceColor(board[row - 2][col + 1]) !== pieceColor) {
+                moves.push({row: row - 2, col: col + 1});
+            }
+        }
+
+        //Down and left
+        if (row + 2 < 8 && col - 1 >= 0) {
+            if (board[row + 2][col - 1] === PieceType.EMPTY || getPieceColor(board[row + 2][col - 1]) !== pieceColor) {
+                moves.push({row: row + 2, col: col - 1});
+            }
+        }
+
+        //Down and right
+        if (row + 2 < 8 && col + 1 < 8) {
+            if (board[row + 2][col + 1] === PieceType.EMPTY || getPieceColor(board[row + 2][col + 1]) !== pieceColor) {
+                moves.push({row: row + 2, col: col + 1});
+            }
+        }
+
+        //Left and up
+        if (row - 1 >= 0 && col - 2 >= 0) {
+            if (board[row - 1][col - 2] === PieceType.EMPTY || getPieceColor(board[row - 1][col - 2]) !== pieceColor) {
+                moves.push({row: row - 1, col: col - 2});
+            }
+        }
+
+        //Left and down
+        if (row + 1 < 8 && col - 2 >= 0) {
+            if (board[row + 1][col - 2] === PieceType.EMPTY || getPieceColor(board[row + 1][col - 2]) !== pieceColor) {
+                moves.push({row: row + 1, col: col - 2});
+            }
+        }
+
+        //Right and up
+        if (row - 1 >= 0 && col + 2 < 8) {
+            if (board[row - 1][col + 2] === PieceType.EMPTY || getPieceColor(board[row - 1][col + 2]) !== pieceColor) {
+                moves.push({row: row - 1, col: col + 2});
+            }
+        }
+
+        //Right and down
+        if (row + 1 < 8 && col + 2 < 8) {
+            if (board[row + 1][col + 2] === PieceType.EMPTY || getPieceColor(board[row + 1][col + 2]) !== pieceColor) {
+                moves.push({row: row + 1, col: col + 2});
+            }
+        }
+
+
+
+        return moves;
     }
 
     const getBishopMoves = (position: Position) => {
-        return [];
+        const {row, col} = position;
+        const piece = board[row][col];
+        const pieceColor = getPieceColor(piece);
+        const moves: Position[] = [];
+
+        //A bishop can move diagonally
+        //1. Up and left
+        //2. Up and right
+        //3. Down and left
+        //4. Down and right
+
+        //Up and left
+        for (let i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
+            if (board[i][j] === PieceType.EMPTY) {
+                moves.push({row: i, col: j});
+            } else {
+                if (getPieceColor(board[i][j]) !== pieceColor) {
+                    moves.push({row: i, col: j});
+                }
+                break;
+            }
+        }
+
+        //Up and right
+        for (let i = row - 1, j = col + 1; i >= 0 && j < 8; i--, j++) {
+            if (board[i][j] === PieceType.EMPTY) {
+                moves.push({row: i, col: j});
+            } else {
+                if (getPieceColor(board[i][j]) !== pieceColor) {
+                    moves.push({row: i, col: j});
+                }
+                break;
+            }
+        }
+
+        //Down and left
+        for (let i = row + 1, j = col - 1; i < 8 && j >= 0; i++, j--) {
+            if (board[i][j] === PieceType.EMPTY) {
+                moves.push({row: i, col: j});
+            } else {
+                if (getPieceColor(board[i][j]) !== pieceColor) {
+                    moves.push({row: i, col: j});
+                }
+                break;
+            }
+        }
+
+        //Down and right
+        for (let i = row + 1, j = col + 1; i < 8 && j < 8; i++, j++) {
+            if (board[i][j] === PieceType.EMPTY) {
+                moves.push({row: i, col: j});
+            } else {
+                if (getPieceColor(board[i][j]) !== pieceColor) {
+                    moves.push({row: i, col: j});
+                }
+                break;
+            }
+        }
+
+        return moves;
     }
 
     const getQueenMoves = (position: Position) => {
-        return [];
+        const {row, col} = position;
+        const piece = board[row][col];
+        const pieceColor = getPieceColor(piece);
+
+        const moves: Position[] = [];
+
+        //A queen can move in all directions like a rook and a bishop
+        //Reuse the rook and bishop moves
+        moves.push(...getRookMoves(position));
+        moves.push(...getBishopMoves(position));
+
+        return moves;
     }
 
     const getKingMoves = (position: Position) => {
-        return [];
+        const {row, col} = position;
+        const piece = board[row][col];
+        const pieceColor = getPieceColor(piece);
+
+        const moves: Position[] = [];
+
+        //A king can move in all directions by one step
+        //1. Up
+        //2. Down
+        //3. Left
+        //4. Right
+        //5. Up and left
+        //6. Up and right
+        //7. Down and left
+        //8. Down and right
+
+        //Up
+        if (row - 1 >= 0) {
+            if (board[row - 1][col] === PieceType.EMPTY || getPieceColor(board[row - 1][col]) !== pieceColor) {
+                moves.push({row: row - 1, col});
+            }
+        }
+
+        //Down
+        if (row + 1 < 8) {
+            if (board[row + 1][col] === PieceType.EMPTY || getPieceColor(board[row + 1][col]) !== pieceColor) {
+                moves.push({row: row + 1, col});
+            }
+        }
+
+        //Left
+        if (col - 1 >= 0) {
+            if (board[row][col - 1] === PieceType.EMPTY || getPieceColor(board[row][col - 1]) !== pieceColor) {
+                moves.push({row, col: col - 1});
+            }
+        }
+
+        //Right
+        if (col + 1 < 8) {
+            if (board[row][col + 1] === PieceType.EMPTY || getPieceColor(board[row][col + 1]) !== pieceColor) {
+                moves.push({row, col: col + 1});
+            }
+        }
+
+        //Up and left
+        if (row - 1 >= 0 && col - 1 >= 0) {
+            if (board[row - 1][col - 1] === PieceType.EMPTY || getPieceColor(board[row - 1][col - 1]) !== pieceColor) {
+                moves.push({row: row - 1, col: col - 1});
+            }
+        }
+
+        //Up and right
+        if (row - 1 >= 0 && col + 1 < 8) {
+            if (board[row - 1][col + 1] === PieceType.EMPTY || getPieceColor(board[row - 1][col + 1]) !== pieceColor) {
+                moves.push({row: row - 1, col: col + 1});
+            }
+        }
+
+        //Down and left
+        if (row + 1 < 8 && col - 1 >= 0) {
+            if (board[row + 1][col - 1] === PieceType.EMPTY || getPieceColor(board[row + 1][col - 1]) !== pieceColor) {
+                moves.push({row: row + 1, col: col - 1});
+            }
+        }
+
+        //Down and right
+        if (row + 1 < 8 && col + 1 < 8) {
+            if (board[row + 1][col + 1] === PieceType.EMPTY || getPieceColor(board[row + 1][col + 1]) !== pieceColor) {
+                moves.push({row: row + 1, col: col + 1});
+            }
+        }
+
+        return moves;
     }
 
     const getPossibleMoves = (position: Position) => {
