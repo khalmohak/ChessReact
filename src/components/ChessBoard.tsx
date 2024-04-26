@@ -1,82 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import ChessSquare from "./ChessSquare";
 import {useGameState} from "../providers/GameStateProvider";
 import {PieceType} from "../types/enums";
+import {Pieces} from "../lib/Pieces";
 
 const ChessBoard: React.FC = () => {
-    const {board, setBoard, currentPlayer, setCurrentPlayer} = useGameState();
-
-    const [selectedPiece, setSelectedPiece] = useState<number[] | null>(null);
-    const [possibleMoves, setPossibleMoves] = useState<number[][]>([]);
-
-    useEffect(() => {
-        if (!selectedPiece) {
-            return;
-        }
-
-        const [i, j] = selectedPiece;
-        const piece = board[i][j];
-        const possibleMoves = calculatePossibleMoves(piece, i, j);
-        setPossibleMoves(possibleMoves);
-    }, [selectedPiece]);
-
-    const calculatePossibleMoves = (piece: string, i: number, j: number) => {
-        const possibleMoves: number[][] = [];
-        switch (piece) {
-            case "wP":
-                if (i === 1) {
-                    possibleMoves.push([i + 1, j]);
-                    possibleMoves.push([i + 2, j]);
-                } else {
-                    possibleMoves.push([i + 1, j]);
-                }
-                break;
-            case "bP":
-                if (i === 6) {
-                    possibleMoves.push([i - 1, j]);
-                    possibleMoves.push([i - 2, j]);
-                } else {
-                    possibleMoves.push([i - 1, j]);
-                }
-                break;
-            case "wR":
-            case "bR":
-            case "wB":
-            case "bB":
-            case "wQ":
-            case "bQ":
-            case "wK":
-            case "bK":
-                for (let i = 0; i < 8; i++) {
-                    for (let j = 0; j < 8; j++) {
-                        possibleMoves.push([i, j]);
-                    }
-                }
-                break;
-            case "wN":
-            case "bN":
-                possibleMoves.push([i + 2, j + 1]);
-                possibleMoves.push([i + 2, j - 1]);
-                possibleMoves.push([i - 2, j + 1]);
-                possibleMoves.push([i - 2, j - 1]);
-                possibleMoves.push([i + 1, j + 2]);
-                possibleMoves.push([i + 1, j - 2]);
-                possibleMoves.push([i - 1, j + 2]);
-                possibleMoves.push([i - 1, j - 2]);
-                break;
-        }
-        return possibleMoves;
-    }
-
-    const movePiece = (i: number, j: number) => {
-        console.log("moving piece", i, j);
-        const [selectedI, selectedJ] = selectedPiece!;
-        const piece = board[selectedI][selectedJ];
-        const newBoard = board.map(row => [...row]);
-        newBoard[i][j] = piece;
-        newBoard[selectedI][selectedJ] = PieceType.EMPTY;
-        setBoard(newBoard);
-    }
+    const {
+        board,
+        currentPlayer,
+        resetBoard,
+        setRandomBoard,
+        blackCapturedPieces,
+        whiteCapturedPieces,
+        undoMove
+    } = useGameState();
 
     return (
         <div
@@ -92,16 +29,88 @@ const ChessBoard: React.FC = () => {
                 {board.map((row, i) => {
                     return row.map((piece, j) => {
                         return <ChessSquare
+                            key={`${i}${j}`}
                             piece={piece}
-                            i={i}
-                            j={j}
-                            selectedPiece={selectedPiece}
-                            setSelectedPiece={setSelectedPiece}
-                            isPossibleMove={possibleMoves.findIndex(move=>move[0]===i && move[1]===j) !== -1}
-                            movePiece={movePiece}
+                            row={i}
+                            col={j}
                         />
                     });
                 })}
+            </div>
+            <div
+                className="flex items-center justify-center mt-10"
+            >
+                <button
+                    className={"mr-2 text-xl text-white"}
+                    onClick={resetBoard}
+                >
+                    Reset
+                </button>
+                <button
+                    className="mr-2 text-xl text-white"
+                    onClick={undoMove}
+                >
+                    Undo
+                </button>
+                <button
+                    className={"mr-2 text-xl text-white"}
+                    onClick={setRandomBoard}
+                >
+                    Randomize
+                </button>
+            </div>
+
+            {/*    Captured pieces*/}
+            <div
+                className="flex justify-center mt-10"
+            >
+                <div
+                    className="flex flex-col items-center mr-10"
+                >
+                    <div
+                        className="text-white text-xl"
+                    >
+                        White Captured Pieces
+                    </div>
+                    <div
+                        className="flex flex-wrap"
+                    >
+                        {whiteCapturedPieces.map((piece, i) => {
+                            return <img
+                                key={i}
+                                // @ts-ignore
+                                src={Pieces[piece].src}
+                                // @ts-ignore
+                                alt={Pieces[piece].name}
+                                className="h-10 w-10"
+                            />
+                        })}
+                    </div>
+                </div>
+                <div
+                    className="flex flex-col items-center"
+                >
+                    <div
+                        className="text-white text-xl"
+                    >
+                        Black Captured Pieces
+                    </div>
+                    <div
+                        className="flex flex-wrap"
+                    >
+                        {blackCapturedPieces.map((piece, i) => {
+                            return <img
+                                key={i}
+                                // @ts-ignore
+                                src={Pieces[piece].src}
+                                // @ts-ignore
+                                alt={Pieces[piece].name}
+                                className="h-10 w-10"
+                            />
+                        })}
+                    </div>
+                </div>
+
             </div>
         </div>
 

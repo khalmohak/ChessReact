@@ -11,9 +11,10 @@ import RookB from "../../assets/rook-b.svg";
 import PawnW from "../../assets/pawn-w.svg";
 import PawnB from "../../assets/pawn-b.svg";
 import {PieceType} from "../../types/enums";
+import React from "react";
 
 export const Pieces :{
-    [key in PieceType]: {name: string, src: string}
+    [key in PieceType]: {name: string, src: React.FunctionComponent<React.SVGProps<SVGSVGElement>> | undefined}
 } = {
     // wP: {name: "wP", src: PawnW},
     // wR: {name: "wR", src: RookW},
@@ -39,6 +40,7 @@ export const Pieces :{
     [PieceType.WHITE_BISHOP]: {name: "wB", src: BishopW},
     [PieceType.WHITE_QUEEN]: {name: "wQ", src: QueenW},
     [PieceType.WHITE_KING]: {name: "wK", src: KingW},
+    [PieceType.EMPTY]: {name: "", src: undefined}
 };
 
 export const PIECE_NAMES = {

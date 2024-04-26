@@ -1,10 +1,17 @@
 interface GameStateContextType {
     board: PieceType[][];
-    setBoard: (board: PieceType[][]) => void;
     currentPlayer: PlayerColors;
-    setCurrentPlayer: (player: PlayerColors) => void;
     moveHistory: Move[];
-    setMoveHistory: (moveHistory: Move[]) => void;
+    movePiece: (from: Position, to: Position) => void;
+    undoMove: () => void;
+    setRandomBoard: () => void;
+    resetBoard: () => void;
+    selectedPiece: Position | null;
+    setSelectedPiece: (position: Position | null) => void;
+    possibleMoves: Position[];
+    isGameOver: boolean;
+    whiteCapturedPieces: PieceType[];
+    blackCapturedPieces: PieceType[];
 }
 
 interface Move {
@@ -14,6 +21,11 @@ interface Move {
     targetCol: number;
     currentPiece: PieceType;
     targetPiece: PieceType;
+}
+
+interface Position {
+    row: number;
+    col: number;
 }
 
 
