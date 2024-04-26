@@ -1,26 +1,43 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {generateRandomBoard, generateNewBoard, PLAYER_COLORS} from "./Pieces";
+import ChessBoard from "./components/ChessBoard";
+
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    const [board, setBoard] = React.useState<string[][]>(generateNewBoard());
+    const [currentPlayer, setCurrentPlayer] = React.useState<string>(PLAYER_COLORS.WHITE);
+   
+    // 
+
+    return (
+        <div
+            className="flex flex-col h-screen items-center justify-center bg-gray-800 pt-10"
         >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+            <ChessBoard
+                board={board}
+                currentPlayer={currentPlayer}
+                setBoard={setBoard}
+            />
+            <div
+                className="flex items-center justify-center mt-10"
+            >
+                <button
+                    className={"mr-2 text-xl text-white"}
+                    onClick={() => setBoard(generateNewBoard())}
+                >
+                    Reset
+                </button>
+                <button
+                    className={"mr-2 text-xl text-white"}
+                    onClick={() => setBoard(generateRandomBoard())}
+                >
+                    Randomize
+                </button>
+            </div>
+        </div>
+    );
 }
+
+//write
 
 export default App;
